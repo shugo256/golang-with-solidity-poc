@@ -19,11 +19,11 @@ build/solc_outs/%.bin: contracts/%.sol
 	solc --optimize --bin $< -o build/solc_outs
 
 bindings/%.go: build/solc_outs/%.abi build/solc_outs/%.bin
-	abigen --abi=$(word 1,$^) --bin=$(word 2,$^) --pkg=api --out=$@
+	abigen --abi=$(word 1,$^) --bin=$(word 2,$^) --pkg=bindings --type $* --out $@
 
-gen_bindings: $(BINDINGS)
+bindings: $(BINDINGS)
 
-run: $(CONTRACT_JSONS) gen_bindings
+run: $(CONTRACT_JSONS) bindings
 	go run github.com/shugo256/golang-with-solidity-poc
 
 clean:

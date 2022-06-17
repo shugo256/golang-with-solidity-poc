@@ -29,10 +29,10 @@ func setter(w http.ResponseWriter, req *http.Request) {
 
 	privateKey, err := crypto.HexToECDSA(os.Getenv("PRIVATE_KEY"))
 	transaction, err := gateway.SingleNumRegister.Set(bind.NewKeyedTransactor(privateKey), &n)
-
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	_, err = fmt.Fprintf(w, "Set value: %v (transaction: %v)", n.String(), transaction)
 	if err != nil {
 		fmt.Println(err)
