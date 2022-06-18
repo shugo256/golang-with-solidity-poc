@@ -7,7 +7,10 @@ SOLC_BINS = $(addprefix build/solc_outs/, $(CONTRACTS:=.bin))
 
 BINDINGS = bindings/SingleNumRegister.go
 
-.PHONY: run gen_bindings
+GOA_DESIGN_DIR = design
+GOA_GEN_DIR = gen
+
+.PHONY: run bindings goa
 
 build/contracts/%.json: contracts/%.sol
 	truffle migrate
@@ -21,10 +24,15 @@ build/solc_outs/%.bin: contracts/%.sol
 bindings/%.go: build/solc_outs/%.abi build/solc_outs/%.bin
 	abigen --abi=$(word 1,$^) --bin=$(word 2,$^) --pkg=bindings --type $* --out $@
 
+$(GOA_GEN_DIR): $(GOA_DESIGN_DIR)
+	goa gen github.com/shugo256/golang-with-solidity-poc/$(GOA_DESIGN_DIR)
+
 bindings: $(BINDINGS)
 
-run: $(CONTRACT_JSONS) bindings
+goa: $(GOA_GEN_DIR)
+
+run: $(CONTRACT_JSONS) bindings goa
 	go run github.com/shugo256/golang-with-solidity-poc
 
 clean:
-	rm -f $(CONTRACT_JSONS) $(SOLC_ABIS) $(SOLC_BINS) $(BINDINGS)
+	rm -rf $(CONTRACT_JSONS) $(SOLC_ABIS) $(SOLC_BINS) $(BINDINGS) $(GOA_GEN_DIR)
