@@ -58,4 +58,18 @@ var _ = dsl.Service("SingleNumRegister", func() {
 			dsl.Response(dsl.StatusOK)
 		})
 	})
+
+	dsl.Method("Html", func() {
+		dsl.Description("Get the value of the single num as HTML.")
+
+		dsl.Result(dsl.Bytes)
+
+		dsl.HTTP(func() {
+			dsl.GET("/html")
+
+			dsl.Response(dsl.StatusOK, func() {
+				dsl.ContentType("text/html; charset=UTF-8")
+			})
+		})
+	})
 })
