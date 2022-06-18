@@ -3,7 +3,10 @@ package main
 import (
 	"github.com/joho/godotenv"
 	"github.com/shugo256/golang-with-solidity-poc/gateway"
-	"github.com/shugo256/golang-with-solidity-poc/handlers/single_num"
+	"github.com/shugo256/golang-with-solidity-poc/gen/http/single_num_register/server"
+	singlenumregister "github.com/shugo256/golang-with-solidity-poc/gen/single_num_register"
+	"github.com/shugo256/golang-with-solidity-poc/services"
+	goahttp "goa.design/goa/v3/http"
 	"log"
 	"net/http"
 )
@@ -17,8 +20,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.Handle("/set/", single_num.Setter)
-	http.Handle("/", single_num.Getter)
+	endpoints := singlenumregister.NewEndpoints(services.SingleNumRegisterService{})
+	handler := goahttp.NewMuxer()
+	server.Mount(handler, server.New(endpoints, handler, goahttp.RequestDecoder, goahttp.ResponseEncoder, nil, nil))
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
