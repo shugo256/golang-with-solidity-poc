@@ -16,7 +16,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := gateway.InitContractClients("http://127.0.0.1:7545"); err != nil {
+	if err := gateway.InitContractClients("http://127.0.0.1:8545"); err != nil {
 		log.Fatal(err)
 	}
 

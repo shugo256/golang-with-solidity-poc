@@ -1,0 +1,9 @@
+version: '3.0'
+services:
+  ganache:
+    image: trufflesuite/ganache-cli:v6.12.2
+    command: [
+      "--account=0x${PRIVATE_KEY},100000000000000000000"
+    ]
+    ports:
+      - "8545:8545"
