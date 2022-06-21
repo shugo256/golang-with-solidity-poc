@@ -1,6 +1,7 @@
 package design
 
 import "goa.design/goa/v3/dsl"
+import _ "goa.design/plugins/v3/zerologger"
 
 var Value = dsl.Type("value", dsl.Int, func() {
 	dsl.Description("Value of the single num.")
@@ -24,6 +25,8 @@ var _ = dsl.API("knowtfolio", func() {
 	dsl.Description("HTTP service for multiplying numbers, a goa teaser")
 	dsl.Server("knowtfolio", func() {
 		dsl.Host("localhost", func() { dsl.URI("http://localhost:8080") })
+
+		dsl.Services("SingleNumRegister")
 	})
 })
 

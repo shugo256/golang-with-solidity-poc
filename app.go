@@ -2,27 +2,30 @@ package main
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/shugo256/golang-with-solidity-poc/gateway"
-	"github.com/shugo256/golang-with-solidity-poc/gen/http/single_num_register/server"
-	singlenumregister "github.com/shugo256/golang-with-solidity-poc/gen/single_num_register"
+	genlog "github.com/shugo256/golang-with-solidity-poc/gen/log"
 	"github.com/shugo256/golang-with-solidity-poc/services"
-	goahttp "goa.design/goa/v3/http"
-	"log"
+	"github.com/shugo256/golang-with-solidity-poc/services/single_num_service"
 	"net/http"
+	"os"
 )
 
 func main() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
+
+	logger := genlog.New("main", true)
+
 	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
+		logger.Err(err)
 	}
 
 	if err := gateway.InitContractClients("http://127.0.0.1:8545"); err != nil {
-		log.Fatal(err)
+		logger.Err(err)
 	}
+	handler := services.NewHttpHandler()
+	handler.AddService(single_num_service.New(*handler), "single-num-service")
 
-	endpoints := singlenumregister.NewEndpoints(services.SingleNumRegisterService{})
-	handler := goahttp.NewMuxer()
-	server.Mount(handler, server.New(endpoints, handler, goahttp.RequestDecoder, goahttp.ResponseEncoder, nil, nil))
-
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	logger.Err(http.ListenAndServe(":8080", handler))
 }
